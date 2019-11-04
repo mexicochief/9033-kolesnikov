@@ -1,0 +1,3 @@
+rootProject.name = 'kolesnikov'
+include 'task1-multiplication-table'
+
