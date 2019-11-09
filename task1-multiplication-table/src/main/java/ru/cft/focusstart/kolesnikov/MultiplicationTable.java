@@ -83,7 +83,5 @@ public class MultiplicationTable {
         printStream.println(str);
 
     }
-
-
 }
 
