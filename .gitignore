@@ -1,4 +1,5 @@
 /.gradle/
 /.idea/
 /task1-multiplication-table/build/
-/task1-multiplication-table/src/test/
+/task1-multiplication-table/src/test/resources/
+/task1-multiplication-table/src/main/resources/
