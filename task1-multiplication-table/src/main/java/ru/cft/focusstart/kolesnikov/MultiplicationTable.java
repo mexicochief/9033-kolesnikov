@@ -9,39 +9,34 @@ import java.io.PrintStream;
 
 public class MultiplicationTable {
 
-    public static void main(String[] args) {
-        int tableSize = getTableSize(new BufferedReader(new InputStreamReader(System.in)));
+    public static void main(String[] args) throws IOException {
+        int tableSize = getTableSize(new BufferedReader(new InputStreamReader(System.in)), 32);
 
         String table = buildTableAsString(tableSize);
         writeToConsole(System.out, table);
     }
 
-    public static int getTableSize(BufferedReader bufferedReader) {
-        int tableSize;
-        try {
-            tableSize = readFromConsole(bufferedReader);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Wrong value, must be integer number with range [0,32]");
-        } catch (IOException e) {
-            tableSize = getTableSize(bufferedReader);
+    public static int getTableSize(BufferedReader bufferedReader, int maxValue) throws IOException {
+        System.out.println("Print integer number with range [0," + maxValue + "]");
+        int tableSize = readIntFromConsole(bufferedReader);
+        if (0 > tableSize || tableSize > maxValue) {
+            throw new IllegalArgumentException("Wrong value, must be integer number with range [0," + maxValue + "]");
         }
         return tableSize;
     }
 
-    private static int readFromConsole(BufferedReader bufferedReader) throws IOException, NumberFormatException {
-        System.out.println("Print integer number with range [0,32]");
-        int size = Integer.parseInt(bufferedReader.readLine());
-
-        if (0 > size || size > 32) {
-            throw new IllegalArgumentException("Wrong value, must be integer number with range [0,32]");
+    private static int readIntFromConsole(BufferedReader bufferedReader) throws IOException {
+        try {
+            return Integer.parseInt(bufferedReader.readLine());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Wrong value, must be integer number");
         }
-        return size;
     }
 
     public static String buildTableAsString(int tableSize) {
         StringBuilder resultTable = new StringBuilder();
         int cellSize = getCellSize(tableSize);
-        String separateLine = createLine(tableSize, cellSize);
+        String separateLine = createSeparatorLine(tableSize, cellSize);
 
         for (int i = 1; i <= tableSize; i++) {
             for (int j = 1; j <= tableSize; j++) {
@@ -53,9 +48,9 @@ public class MultiplicationTable {
                 }
             }
             if (i != tableSize) {
-                resultTable.append("\n");
+                resultTable.append(System.lineSeparator());
                 resultTable.append(separateLine);
-                resultTable.append("\n");
+                resultTable.append(System.lineSeparator());
             }
         }
         return resultTable.toString();
@@ -66,7 +61,7 @@ public class MultiplicationTable {
         return temp.length();
     }
 
-    private static String createLine(int size, int len) {
+    private static String createSeparatorLine(int size, int len) {
         StringBuilder stringBuilder = new StringBuilder();
         String lineElement = String.format("%" + len + "s", "-");
         lineElement = lineElement.replace(" ", "-");
@@ -86,6 +81,7 @@ public class MultiplicationTable {
 
     public static void writeToConsole(PrintStream printStream, String str) {
         printStream.println(str);
+
     }
 
 

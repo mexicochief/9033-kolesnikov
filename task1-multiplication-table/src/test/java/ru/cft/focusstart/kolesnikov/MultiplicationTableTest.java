@@ -14,14 +14,22 @@ import static ru.cft.focusstart.kolesnikov.MultiplicationTable.*;
 
 public class MultiplicationTableTest {
 
-    private String strExpected1 = " 1| 2| 3| 4| 5\n" +
-            "--+--+--+--+--\n" +
-            " 2| 4| 6| 8|10\n" +
-            "--+--+--+--+--\n" +
-            " 3| 6| 9|12|15\n" +
-            "--+--+--+--+--\n" +
-            " 4| 8|12|16|20\n" +
-            "--+--+--+--+--\n" +
+    private String strExpected1 = " 1| 2| 3| 4| 5" +
+            System.lineSeparator() +
+            "--+--+--+--+--" +
+            System.lineSeparator() +
+            " 2| 4| 6| 8|10" +
+            System.lineSeparator() +
+            "--+--+--+--+--" +
+            System.lineSeparator() +
+            " 3| 6| 9|12|15" +
+            System.lineSeparator() +
+            "--+--+--+--+--" +
+            System.lineSeparator() +
+            " 4| 8|12|16|20" +
+            System.lineSeparator() +
+            "--+--+--+--+--" +
+            System.lineSeparator() +
             " 5|10|15|20|25";
 
     private final PrintStream printStream = mock(PrintStream.class);
@@ -33,7 +41,7 @@ public class MultiplicationTableTest {
     @Test
     public void testGetTableSize() throws IOException {
         when(bufferedReader.readLine()).thenReturn("5");
-        assertEquals(5, getTableSize(bufferedReader));
+        assertEquals(5, getTableSize(bufferedReader,32));
         verify(bufferedReader).readLine();
     }
 
@@ -41,8 +49,8 @@ public class MultiplicationTableTest {
     public void testGetTableSizeWithIllegalArguments() throws IOException {
         when(bufferedReader.readLine()).thenReturn("A");
         thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Wrong value, must be integer number with range [0,32]");
-        getTableSize(bufferedReader);
+        thrown.expectMessage("Wrong value, must be integer number");
+        getTableSize(bufferedReader,32);
     }
 
     @Test
@@ -50,14 +58,7 @@ public class MultiplicationTableTest {
         when(bufferedReader.readLine()).thenReturn("33");
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Wrong value, must be integer number with range [0,32]");
-        getTableSize(bufferedReader);
-    }
-
-    @Test
-    public void testGetTableSizeWithIOException() throws IOException {
-        when(bufferedReader.readLine()).thenThrow(IOException.class).thenReturn("5");
-        getTableSize(bufferedReader);
-        verify(bufferedReader, times(2)).readLine();
+        getTableSize(bufferedReader,32);
     }
 
     @Test
