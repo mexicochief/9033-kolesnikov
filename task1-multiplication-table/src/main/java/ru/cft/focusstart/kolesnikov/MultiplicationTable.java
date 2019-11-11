@@ -1,69 +1,67 @@
 package ru.cft.focusstart.kolesnikov;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintStream;
+
 
 public class MultiplicationTable {
-    public static void main(String[] args) {
-        int tableSize = getTableSize();
-        int cellSize = getCellSize(tableSize);
 
-        buildTable(tableSize, cellSize);
+    public static void main(String[] args) throws IOException {
+        int tableSize = getTableSize(new BufferedReader(new InputStreamReader(System.in)), 32);
+
+        String table = buildTableAsString(tableSize);
+        writeToConsole(System.out, table);
     }
 
-
-    private static int getTableSize() {
-
-        try {
-            return readFromConsole();
-        } catch (InputMismatchException e) {
-            System.out.println("Должно быть целое положительное число");
-            return getTableSize();
+    public static int getTableSize(BufferedReader bufferedReader, int maxValue) throws IOException {
+        System.out.println("Print integer number with range [0," + maxValue + "]");
+        int tableSize = readIntFromConsole(bufferedReader);
+        if (0 > tableSize || tableSize > maxValue) {
+            throw new IllegalArgumentException("Wrong value, must be integer number with range [0," + maxValue + "]");
         }
-
+        return tableSize;
     }
 
-    private static int readFromConsole() {
-        Scanner scanner = new Scanner(System.in);
-        int size = scanner.nextInt();
-        if (size < 0) throw new InputMismatchException();
-        return size;
+    private static int readIntFromConsole(BufferedReader bufferedReader) throws IOException {
+        try {
+            return Integer.parseInt(bufferedReader.readLine());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Wrong value, must be integer number");
+        }
     }
 
+    public static String buildTableAsString(int tableSize) {
+        StringBuilder resultTable = new StringBuilder();
+        int cellSize = getCellSize(tableSize);
+        String separateLine = createSeparatorLine(tableSize, cellSize);
 
-    private static int getCellSize(int size) {
-        String temp = String.valueOf(size * size);
+        for (int i = 1; i <= tableSize; i++) {
+            for (int j = 1; j <= tableSize; j++) {
+                int tableElement = j * i;
+                String resultString = convertToCell(tableElement, cellSize);
+                resultTable.append(resultString);
+                if (j != tableSize) {
+                    resultTable.append("|");
+                }
+            }
+            if (i != tableSize) {
+                resultTable.append(System.lineSeparator());
+                resultTable.append(separateLine);
+                resultTable.append(System.lineSeparator());
+            }
+        }
+        return resultTable.toString();
+    }
+
+    private static int getCellSize(int tableSize) {
+        String temp = String.valueOf(tableSize * tableSize);
         return temp.length();
     }
 
-
-    private static void buildTable(int tablesize, int sqaresize) {
-        for (int i = 1; i <= tablesize; i++) {
-            for (int j = 1; j < tablesize; j++) {
-                int tableElement = j * i;
-                String resultString = convertToCell(tableElement, sqaresize);
-                System.out.printf("%s%s",resultString, "|");
-            }
-            int lastElement = tablesize * i;
-            System.out.println(convertToCell(lastElement, sqaresize)); // добавить последнюю клетку(без |)
-            if (i != tablesize) System.out.println(createLine(tablesize, sqaresize)); // вывести разделитель
-
-        }
-
-    }
-
-
-    private static String convertToCell(int number, int maxNumberLen) {
-        String res = String.valueOf(number);
-        int temp = maxNumberLen;
-        String str;
-        str = String.format("%" + temp + "s", res);
-
-        return str;
-    }
-
-
-    private static String createLine(int size, int len) {
+    private static String createSeparatorLine(int size, int len) {
         StringBuilder stringBuilder = new StringBuilder();
         String lineElement = String.format("%" + len + "s", "-");
         lineElement = lineElement.replace(" ", "-");
@@ -72,11 +70,18 @@ public class MultiplicationTable {
             stringBuilder.append(lineElement);
             stringBuilder.append("+");
         }
-        stringBuilder.append(lineElement); // добавить последний элемент строки(без + )
-
+        stringBuilder.append(lineElement);
         return String.valueOf(stringBuilder);
-
     }
 
+    private static String convertToCell(int number, int maxNumberLen) {
+        String res = String.valueOf(number);
+        return String.format("%" + maxNumberLen + "s", res);
+    }
+
+    public static void writeToConsole(PrintStream printStream, String str) {
+        printStream.println(str);
+
+    }
 }
 
