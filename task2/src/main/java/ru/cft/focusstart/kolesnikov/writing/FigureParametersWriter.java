@@ -9,22 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FigureParametersWriter {
-    private Figure figureOb;
 
-    public FigureParametersWriter(Figure figureOb) {
-        this.figureOb = figureOb;
-    }
-
-    public void writeFigureParameters(PrintWriter printWriter) {
-        HashMap<String, String> commonParameters = figureOb.getCommonParameters();
-        HashMap<String, String> specialParameters = figureOb.getSpecialParameters();
-        try (BufferedWriter bufferedWriter = new BufferedWriter(printWriter)) {
-            for (Map.Entry<String, String> temp : commonParameters.entrySet()) {
-                bufferedWriter.write(temp.getKey() + " " + temp.getValue());
+    public void writeFigureParameters(PrintWriter printWriter, Figure figure) {
+        HashMap<String, String> commonParameters = figure.getCommonParameters();
+        HashMap<String, String> specialParameters = figure.getSpecialParameters();
+        try (BufferedWriter bufferedWriter = new BufferedWriter(printWriter)) { //
+            for (Map.Entry<String, String> parameters : commonParameters.entrySet()) {
+                bufferedWriter.write(parameters.getKey() + " " + parameters.getValue());
                 bufferedWriter.write(System.lineSeparator());
             }
-            for (Map.Entry<String, String> temp : specialParameters.entrySet()) {
-                bufferedWriter.write(temp.getKey() + " " + temp.getValue());
+            for (Map.Entry<String, String> parameters : specialParameters.entrySet()) {
+                bufferedWriter.write(parameters.getKey() + " " + parameters.getValue());
                 bufferedWriter.write(System.lineSeparator());
             }
         } catch (IOException e) {

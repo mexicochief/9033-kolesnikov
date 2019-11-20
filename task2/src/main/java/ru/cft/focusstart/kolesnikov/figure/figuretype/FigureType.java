@@ -14,5 +14,4 @@ public enum FigureType {
         this.nameRus = nameRus;
         this.quantityParameters = quantityParameters;
     }
-
 }
