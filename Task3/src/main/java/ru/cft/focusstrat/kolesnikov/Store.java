@@ -14,13 +14,12 @@ public class Store {
     }
 
     synchronized public void put(String product, Logger log) throws InterruptedException {
-        if (queue.size() == storeSize) {
+        while (queue.size() == storeSize) {
             wait();
-        } else {
-            queue.add(product);
-            log.info("Продукт " + product + " " + "Прибыл на склад");
-            notifyAll();
         }
+        queue.add(product);
+        log.info("Продукт " + product + " " + "Прибыл на склад");
+        notifyAll();
     }
 
     synchronized public String remove(Logger log) throws InterruptedException {
