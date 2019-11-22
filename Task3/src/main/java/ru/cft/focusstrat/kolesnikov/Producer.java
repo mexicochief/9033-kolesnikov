@@ -3,14 +3,14 @@ package ru.cft.focusstrat.kolesnikov;
 import org.apache.log4j.Logger;
 
 public class Producer implements Runnable {
-    private Store queue;
+    private Store store;
     private Thread t;
     private Product product;
     private static final Logger LOG = Logger.getLogger("Производитель");
 
-    Producer(Store queue, Product product) {
+    Producer(Store store, Product product) {
         this.product = product;
-        this.queue = queue;
+        this.store = store;
         t = new Thread(this);
     }
 
@@ -20,7 +20,7 @@ public class Producer implements Runnable {
             try {
                 String id = product.getAndAppend();
                 LOG.info("Продукт " + id + " произведен");
-                queue.put(id, LOG);
+                store.put(id, LOG);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 LOG.error("Выполнение прерванно");

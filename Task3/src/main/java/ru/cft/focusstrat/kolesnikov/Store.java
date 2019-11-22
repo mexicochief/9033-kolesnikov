@@ -6,28 +6,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Store {
     private int storeSize;
-    private ConcurrentLinkedQueue<String> queue;
+    private ConcurrentLinkedQueue<String> store;
 
     Store(int storeSize) {
-        queue = new ConcurrentLinkedQueue<>();
+        store = new ConcurrentLinkedQueue<>();
         this.storeSize = storeSize;
     }
 
     synchronized public void put(String product, Logger log) throws InterruptedException {
-        while (queue.size() == storeSize) {
+        while (store.size() == storeSize) {
             wait();
         }
-        queue.add(product);
+        store.add(product);
         log.info("Продукт " + product + " " + "Прибыл на склад");
         notifyAll();
     }
 
     synchronized public String remove(Logger log) throws InterruptedException {
-        while (queue.size() == 0) {
+        while (store.size() == 0) {
             wait();
         }
         notifyAll();
-        log.info("Продукт " + queue.peek() + " убыл со склада");
-        return queue.remove();
+        log.info("Продукт " + store.peek() + " убыл со склада");
+        return store.remove();
     }
 }
