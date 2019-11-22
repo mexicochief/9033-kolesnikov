@@ -10,7 +10,6 @@ public class Product {
         id = currentProductId.getAndIncrement();
     }
 
-
     synchronized int getId() { // тут не уверен насчёт модификатора
         return id;
     }
