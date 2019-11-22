@@ -8,21 +8,17 @@ import java.util.Scanner;
 
 public class FigureParametersReader {
 
-    public static FigureParameters readFigureParameters(String filename) throws IOException {
-        FigureParameters figureParameters;
+    public static FigureParameters getFigureParameters(String filename) throws IOException {
         File file = new File(filename);
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
              Scanner scanner = new Scanner(file)) {
             FigureType figureType = readFigureType(bufferedReader);
-            figureParameters = new FigureParameters(figureType);
             checkQuantityLineInFile(scanner, figureType);
-            figureParameters.setFigureParameters(readFigureParameters(bufferedReader, figureType));
+            return new FigureParameters(figureType,
+                    readFigureParameters(bufferedReader, figureType));
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("Указанный файл не найден");
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
         }
-        return figureParameters;
     }
 
     private static FigureType readFigureType(BufferedReader bufferedReader) throws IOException {
@@ -38,7 +34,7 @@ public class FigureParametersReader {
 
     private static int quantityLineInFile(Scanner scanner, FigureType figureType) {
         int count = 0;
-        while (scanner.hasNext() || figureType.quantityParameters > count + 1) {
+        while (scanner.hasNext() && figureType.quantityParameters >= count) {
             scanner.nextLine();
             count++;
         }
@@ -56,7 +52,7 @@ public class FigureParametersReader {
     private static double readCorrectParameter(BufferedReader bufferedReader) throws IOException {
         double value;
         try {
-            value = Double.parseDouble(bufferedReader.readLine());
+            value = Double.valueOf(bufferedReader.readLine());
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Неверный символ в файле или пустая строка");
         }

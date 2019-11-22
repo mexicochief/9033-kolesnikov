@@ -9,7 +9,6 @@ public class Rectangle extends AbstractFigure {
     private double secondSide;
 
     public Rectangle(double firstSide, double secondSide) {
-        super();
         this.firstSide = firstSide;
         this.secondSide = secondSide;
     }
@@ -23,8 +22,7 @@ public class Rectangle extends AbstractFigure {
         commonParameters.put("Тип фигуры:", getName());
         commonParameters.put("Площадь:", doubleFormat.getGetRoundedValue(getSquare()));
         commonParameters.put("Периметр:", doubleFormat.getGetRoundedValue(getPerimeter()));
-        specialParameters.put("Длина диагонали", doubleFormat.getGetRoundedValue(getDiagonalLength()));
-
+        commonParameters.put("Длина диагонали", doubleFormat.getGetRoundedValue(getDiagonalLength()));
     }
 
     private double getSquare() {
@@ -46,14 +44,12 @@ public class Rectangle extends AbstractFigure {
     }
 
     private double getLength() {
-        return Math.max(firstSide,secondSide);
+        return Math.max(firstSide, secondSide);
     }
 
     private double getWidth() {
-        return Math.min(firstSide,secondSide);
+        return Math.min(firstSide, secondSide);
     }
-
-
 
 
 }

@@ -22,7 +22,7 @@ public class FigureMain {
             printWriter = new PrintWriter(args[1]);
         }
         Figure figure = FigureParameterSetter.
-                getFigureWithParameters(FigureParametersReader.readFigureParameters(args[0]));
+                getFigureWithParameters(FigureParametersReader.getFigureParameters(args[0]));
         FigureParametersWriter figureWriter = new FigureParametersWriter();
         figureWriter.writeFigureParameters(printWriter, figure);
     }

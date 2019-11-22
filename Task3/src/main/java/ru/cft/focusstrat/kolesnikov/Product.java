@@ -3,9 +3,15 @@ package ru.cft.focusstrat.kolesnikov;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Product {
-    private AtomicInteger currentProductId = new AtomicInteger(0);
+    private static AtomicInteger currentProductId = new AtomicInteger(1);
+    private int id;
 
-    synchronized String getAndAppend() { // тут не уверен насчёт модификатора
-        return String.valueOf(currentProductId.getAndIncrement());
+    Product(){
+        id = currentProductId.getAndIncrement();
+    }
+
+
+    synchronized int getId() { // тут не уверен насчёт модификатора
+        return id;
     }
 }

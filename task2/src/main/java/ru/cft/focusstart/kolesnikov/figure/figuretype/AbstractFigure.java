@@ -1,10 +1,11 @@
 package ru.cft.focusstart.kolesnikov.figure.figuretype;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractFigure implements Figure {
-    protected HashMap<String, String> commonParameters;
-    protected HashMap<String, String> specialParameters;
+    protected Map<String, String> commonParameters;
+    protected Map<String, String> specialParameters;
 
     AbstractFigure(){
         commonParameters = new HashMap<>();
@@ -12,12 +13,7 @@ public abstract class AbstractFigure implements Figure {
     }
 
     @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public HashMap<String, String> getCommonParameters() {
+    public Map<String, String> getCommonParameters() {
         if (commonParameters.isEmpty()) {
             fillCommonParameters();
         }
@@ -27,7 +23,7 @@ public abstract class AbstractFigure implements Figure {
     protected abstract void fillCommonParameters();
 
     @Override
-    public HashMap<String, String> getSpecialParameters() {
+    public Map<String, String> getSpecialParameters() {
         if (specialParameters.isEmpty()) {
             fillSpecialParameters();
         }

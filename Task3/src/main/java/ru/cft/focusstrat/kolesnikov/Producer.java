@@ -5,23 +5,24 @@ import org.apache.log4j.Logger;
 public class Producer implements Runnable {
     private Store store;
     private Thread t;
-    private Product product;
     private static final Logger LOG = Logger.getLogger("Производитель");
+    private int workTime;
 
-    Producer(Store store, Product product) {
-        this.product = product;
+    Producer(Store store, int id, int workTime) {
         this.store = store;
+        this.workTime = workTime;
         t = new Thread(this);
+        t.setName(String.valueOf(id));
     }
 
     @Override
     public void run() {
         while (!Thread.interrupted()) {
             try {
-                String id = product.getAndAppend();
-                LOG.info("Продукт " + id + " произведен");
-                store.put(id, LOG);
-                Thread.sleep(1000);
+                Product product = new Product();
+                Thread.sleep(workTime);
+                LOG.info("Продукт " + product.getId() + " произведен");
+                store.put(product, LOG);
             } catch (InterruptedException e) {
                 LOG.error("Выполнение прерванно");
             }

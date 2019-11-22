@@ -1,13 +1,13 @@
 package ru.cft.focusstart.kolesnikov.figure.figuretype;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public interface Figure {
 
     String getName();
 
-    HashMap<String, String> getCommonParameters();
+    Map<String, String> getCommonParameters();
 
-    HashMap<String, String> getSpecialParameters();
+    Map<String, String> getSpecialParameters();
 
 }

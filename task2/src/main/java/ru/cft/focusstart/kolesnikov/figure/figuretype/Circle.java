@@ -7,7 +7,6 @@ public class Circle extends AbstractFigure {
     private DoubleFormat doubleFormat = new DoubleFormat();
 
     public Circle(double radius) {
-        super();
         this.radius = radius;
     }
 

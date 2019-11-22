@@ -1,6 +1,5 @@
 package ru.cft.focusstart.kolesnikov.figure;
 
-import ru.cft.focusstart.kolesnikov.figure.figureparameters.FigureInputParameters;
 import ru.cft.focusstart.kolesnikov.figure.figuretype.*;
 import ru.cft.focusstart.kolesnikov.reading.FigureParameters;
 
@@ -13,8 +12,8 @@ public class FigureParameterSetter {
         Figure figure = new EmptyFigure();
         switch (parameters.getFigureType()) {
             case RECTANGLE:
-                double firstParameters = parameters.getFigureParameters().get(FigureInputParameters.FIRST_SIDE);
-                double secondParameters = parameters.getFigureParameters().get(FigureInputParameters.SECOND_SIDE);
+                double firstParameters = parameters.getFigureParameters().get(0);
+                double secondParameters = parameters.getFigureParameters().get(1);
                 if (firstParameters == secondParameters) {
                     figure = new Square(firstParameters);
                 } else {
@@ -22,11 +21,11 @@ public class FigureParameterSetter {
                 }
                 break;
             case SQUARE:
-                double sideLength = parameters.getFigureParameters().get(FigureInputParameters.SIDE);
+                double sideLength = parameters.getFigureParameters().get(0);
                 figure = new Square(sideLength);
                 break;
             case CIRCLE:
-                double radius = parameters.getFigureParameters().get(FigureInputParameters.RADIUS);
+                double radius = parameters.getFigureParameters().get(0);
                 figure = new Circle(radius);
                 break;
         }

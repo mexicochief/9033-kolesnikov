@@ -3,22 +3,25 @@ package ru.cft.focusstrat.kolesnikov;
 import org.apache.log4j.Logger;
 
 public class Consumer implements Runnable {
-    private ru.cft.focusstrat.kolesnikov.Store Store;
+    private Store Store;
     private Thread t;
     private static final Logger LOG = Logger.getLogger("Потребитель");
+    private  int workTime;
 
-    Consumer(ru.cft.focusstrat.kolesnikov.Store store) {
+    Consumer(Store store, int id,int workTime) {
         this.Store = store;
+        this.workTime = workTime;
         t = new Thread(this);
+        t.setName(String.valueOf(id));
     }
 
     @Override
     public void run() {
         while (!Thread.interrupted()) {
             try {
-                String id = Store.remove(LOG);
-                LOG.info("Продукт " + id + " потреблён");
-                Thread.sleep(1000);
+                Product product = Store.remove(LOG);
+                Thread.sleep(workTime);
+                LOG.info("Продукт " + product.getId() + " потреблён");
             } catch (InterruptedException e) {
                 LOG.error("Выполнение прерванно");
             }
