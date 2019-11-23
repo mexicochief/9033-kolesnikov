@@ -1,11 +1,13 @@
 package ru.cft.focusstrat.kolesnikov;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Product {
-    private static int instanceCount = 0;
+    private static AtomicInteger currentProductId = new AtomicInteger(1);
     private int id;
 
     Product(){
-        id = instanceCount++;
+        id = currentProductId.getAndIncrement();
     }
 
     int getId() {
