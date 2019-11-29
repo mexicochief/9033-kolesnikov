@@ -7,4 +7,3 @@ include 'task4:server'
 findProject(':task4:server')?.name = 'server'
 include 'task4:client'
 findProject(':task4:client')?.name = 'client'
-
