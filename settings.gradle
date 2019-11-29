@@ -1,5 +1,10 @@
 rootProject.name = 'kolesnikov'
 include 'task1-multiplication-table'
 include 'task2'
-include 'Task3'
+include 'task3'
+include 'task4'
+include 'task4:server'
+findProject(':task4:server')?.name = 'server'
+include 'task4:client'
+findProject(':task4:client')?.name = 'client'
 
