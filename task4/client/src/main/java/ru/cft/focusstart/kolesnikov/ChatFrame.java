@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 
-public class Window {
+public class ChatFrame {
     private JFrame frame;
     private ArrayList<String> userNames;
     private Transmitter transmitter;
@@ -18,7 +18,7 @@ public class Window {
     private Runnable refreshingChatWindow = () -> refreshChatWindow();
     private Thread refreshingChatWindowThread = new Thread(refreshingChatWindow);
 
-    Window() {
+    ChatFrame() {
         transmitter = new Transmitter();
         userNames = new ArrayList<>();
     }

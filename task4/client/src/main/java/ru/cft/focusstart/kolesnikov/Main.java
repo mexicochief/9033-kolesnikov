@@ -2,7 +2,7 @@ package ru.cft.focusstart.kolesnikov;
 
 public class Main {
     public static void main(String[] args) {
-        Window window = new Window();
+        ChatFrame window = new ChatFrame();
         window.runApp();
     }
 
