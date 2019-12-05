@@ -5,22 +5,20 @@ import ru.cft.focusstart.kolesnikov.model.Transmitter;
 import javax.swing.*;
 
 import java.awt.*;
-
 import java.util.ArrayList;
 
 
-public class ChatFrame {
-    private JFrame frame;
-    private ArrayList<String> userNames;
-    private Transmitter transmitter;
+public class ChatFrame implements Observer {
+    private JFrame mainFrame;
+    private JFrame greetingFrame;
     private JTextArea chatField;
-    private JTextArea userList;
-    private Runnable refreshingChatWindow = () -> refreshChatWindow();
-    private Thread refreshingChatWindowThread = new Thread(refreshingChatWindow);
+    private JTextArea userListWindow;
+    private JTextField serverTextField;
+    private JTextField nameTextField;
+    Transmitter transmitter;
 
-    ChatFrame() {
-        transmitter = new Transmitter();
-        userNames = new ArrayList<>();
+    ChatFrame(Transmitter transmitter) {
+        this.transmitter = transmitter;
     }
 
     public void runApp() {
@@ -29,29 +27,10 @@ public class ChatFrame {
     }
 
     private void runGreetingWindow() {
-        JFrame greetingFrame = new JFrame();
+        makeGreetingWindow();
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        JTextField serverTextField = new JTextField();
-        JTextField nameTextField = new JTextField();
-        JButton button = new JButton("Connect");
-        serverTextField.setBorder(BorderFactory.createTitledBorder("Server"));
-        nameTextField.setBorder(BorderFactory.createTitledBorder("User name"));
-        button.addActionListener(e -> {
-            String userName = nameTextField.getText();
-           // String serverAddress = serverTextField.getText();
-            userNames.add(userName);
-            runMainWindow();
-            greetingFrame.dispose();
-
-//            Наскольколко верно будет поместить проверку, которая ниже, здесь ?
-//            if (transmitter.connect(serverAddress, 123)) {
-//                runMainWindow();
-//                greetingFrame.dispose();
-//            } else {
-//                makeConnectionProblemWindow();
-//            }
-        });
+        JButton button = makeConnectButton();
 
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.gridwidth = 2;
@@ -73,17 +52,18 @@ public class ChatFrame {
         greetingFrame.setVisible(true);
     }
 
-    private void runMainWindow() {
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    public void runMainWindow() {
+        greetingFrame.dispose();
+        mainFrame = new JFrame();
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(e -> System.exit(0));
         JMenu jMenu = new JMenu("File");
         jMenu.add(exitItem);
         JMenuBar jMenuBar = new JMenuBar();
         jMenuBar.add(jMenu);
-        frame.setJMenuBar(jMenuBar);
-        frame.setBounds(500, 500, 500, 500);
+        mainFrame.setJMenuBar(jMenuBar);
+        mainFrame.setBounds(500, 500, 500, 500);
 
         JPanel mainPanel = makeJPanel();
         GridBagConstraints constraints = new GridBagConstraints();
@@ -126,17 +106,43 @@ public class ChatFrame {
         constraints.weightx = 0;
         sendButton.addActionListener(e -> {
             String message = inputTextFieldWindow.getText();
-            chatField.append(message + System.lineSeparator());// вынести в отдельную функцию
-            transmitter.sendMessageToServer(message);
+//            chatField.append(message + System.lineSeparator());
             inputTextFieldWindow.setText("");
+            transmitter.sendMsgToServer(message);
         });
         mainPanel.add(sendButton, constraints);
 
-        frame.add(mainPanel);
-        frame.setPreferredSize(new Dimension(600, 300));
-        frame.setResizable(false);
-        frame.pack();
-        frame.setVisible(true);
+        mainFrame.add(mainPanel);
+        mainFrame.setPreferredSize(new Dimension(600, 300));
+        mainFrame.setResizable(false);
+        mainFrame.pack();
+        mainFrame.setVisible(true);
+    }
+
+    private void makeGreetingWindow() {
+        greetingFrame = new JFrame();
+        serverTextField = new JTextField();
+        nameTextField = new JTextField();
+        serverTextField.setBorder(BorderFactory.createTitledBorder("Server"));
+        nameTextField.setBorder(BorderFactory.createTitledBorder("User name"));
+    }
+
+    private JButton makeConnectButton() {
+        JButton button = new JButton("Connect");
+        button.addActionListener(e -> {
+            String userName = nameTextField.getText();
+            String serverAddress = serverTextField.getText();
+            if (!transmitter.connect(serverAddress, 4004, userName)) {
+                    makeConnectionProblemWindow();
+            }
+//            } else if (!transmitter.userNameIsValid()) {
+//                makeUserInvalidWindow();
+//            } else {
+//                runMainWindow();
+//                //greetingFrame.dispose();
+//            }
+        });
+        return button;
     }
 
     private JPanel makeJPanel() {
@@ -155,26 +161,57 @@ public class ChatFrame {
 
     private JScrollPane makeUserListWindow() {
         JScrollPane scrollerUserList = new JScrollPane();
-        userList = new JTextArea();
-        userList.setEditable(false);
-        for (String user : userNames) {
-            userList.append(user);
-        }
-        scrollerUserList.setViewportView(userList);
+        userListWindow = new JTextArea();
+        userListWindow.setEditable(false);
+        scrollerUserList.setViewportView(userListWindow);
         return scrollerUserList;
     }
 
-    private void refreshChatWindow() {
-        while (true) {
-            chatField.append(transmitter.takeMessageFromServer());
-        }
-    }
-
-    private void makeConnectionProblemWindow() {
+    public void makeConnectionProblemWindow() {
         JFrame connectionProblemFrame = new JFrame();
         JLabel connectionProblemMsg = new JLabel("Connection failed");
         connectionProblemFrame.add(connectionProblemMsg);
         connectionProblemFrame.setVisible(true);
         connectionProblemFrame.pack();
+    }
+
+    public void makeUserInvalidWindow() {
+        JFrame connectionProblemFrame = new JFrame();
+        JLabel connectionProblemMsg = new JLabel("User invalid");
+        connectionProblemFrame.add(connectionProblemMsg);
+        connectionProblemFrame.setVisible(true);
+        connectionProblemFrame.pack();
+    }
+
+    public void refreshUserList(ArrayList<String> userList) {
+        userListWindow.setText("");
+        for (String user : userList) {
+            userListWindow.append(user);
+            userListWindow.append(System.lineSeparator());
+        }
+    }
+
+    public void refreshMsgField(String msg){
+        chatField.append(msg);
+        chatField.append(System.lineSeparator());
+    }
+
+    public void writeMessage(String str){
+        chatField.append(str);
+        chatField.append(System.lineSeparator());
+    } // эта хуйня дублируется, убрать
+
+    public void onUserConnected() {
+        // проверять валидность имени на сервере скорее всего
+        // и не добавлять в список а отправлять на сервер
+    }
+
+    @Override
+    public void onUserDisconnected(Observed observed) {
+
+    }
+
+    @Override
+    public void onMessageReceived(Observed observed) {
     }
 }
