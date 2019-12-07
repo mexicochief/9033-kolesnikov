@@ -3,17 +3,21 @@ package ru.cft.focusstart.kolesnikov;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Message {
     private String messageVal;
     private String userName;
-    private JavaTimeModule date;
+    private Date date;
     private MessageType messageType;
     private ArrayList<String> userList;
 
-    public Message(){};
+    public Message(){
+        date = new Date();
+    }
 
     public Message(MessageType messageType){
+        date = new Date();
         this.messageType = messageType;
     }
 
@@ -22,8 +26,12 @@ public class Message {
         return messageType;
     }
 
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
+    }
+
     public String getMessageVal() {
-        return messageVal;
+        return  messageVal;
     }
 
     public void setMessageVal(String messageVal) {
@@ -38,11 +46,11 @@ public class Message {
         this.userName = userName;
     }
 
-    public JavaTimeModule getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(JavaTimeModule date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

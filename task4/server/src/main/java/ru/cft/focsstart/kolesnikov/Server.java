@@ -1,32 +1,49 @@
 package ru.cft.focsstart.kolesnikov;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ru.cft.focusstart.kolesnikov.Message;
-import ru.cft.focusstart.kolesnikov.MessageType;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class Server {
-    ClientManager clientManager;
-    static ArrayList<String> userList = new ArrayList<>(); // тут поправить мб убрать static
-    ArrayList<ClientManager> clients = new ArrayList<>();
-    ArrayList<ClientManager> inactiveClients = new ArrayList<>();
-    ServerSocket serverSocket;
+    private ClientManager clientManager;
+    private ArrayList<String> userList = new ArrayList<>(); // тут поправить мб убрать static
+    private ArrayList<ClientManager> clients = new ArrayList<>();
+    private ArrayList<Thread> threads = new ArrayList<>();
+    private ServerSocket serverSocket;
+    private boolean serverRunning;
 
-    public Server() throws IOException {
-        serverSocket = new ServerSocket(4004);
+    public Server()  {
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->{
+            for (Thread thread:threads){
+                thread.interrupt();
+            }
+            serverRunning = false;
+        }));
     }
 
-    public void runServer() throws IOException {
-        while (true) {
-            Socket socket = serverSocket.accept();
-            clientManager = new ClientManager(socket,this);
-            inactiveClients.add(clientManager);
-            //clients.add(clientManager);
-            new Thread(clientManager).start();
+    public void runServer() {
+        Properties properties = new Properties();
+        try(InputStream propertiesStream = Server.class.getResourceAsStream("/server.properties")) {
+            properties.load(propertiesStream);
+            serverSocket = new ServerSocket(Integer.valueOf(properties.getProperty("server.port")));
+            serverRunning = true;
+            while (serverRunning) {
+                Socket socket = serverSocket.accept();
+                clientManager = new ClientManager(socket, this,userList);
+            }
+        } catch (IOException e) {
+            System.out.println("IOEx in Server"); // исправить
+        }
+        finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -36,24 +53,20 @@ public class Server {
         }
     }
 
-    public void sendMsgToAll(Message msg){
-        for (ClientManager client: clients){
+    public void sendMsgToAll(Message msg) {
+        for (ClientManager client : clients) {
             client.sendMessage(msg);
         }
     }
 
-//    public void sendUserDisconnectedInfo(){
-//        for (ClientManager client:clients){
-//            client.notifyUserDisconnected();
-//        }
-//    }
-
-    public void delSocket(ClientManager client){
-        clients.remove(client);
+    public void addClient(ClientManager clientManager){
+        clients.add(clientManager);
     }
 
 
-
+    public void delSocket(ClientManager client) {
+        clients.remove(client);
+    }
 
 
 }
