@@ -27,12 +27,5 @@ public class ChatField implements NeedToRefresh {
         String date = dateFormat.format(msg.getDate());
         chatWindow.append(date + " " +msg.getUserName() + ": " + msg.getMessageVal());
         chatWindow.append(System.lineSeparator());
-
-//        if (msg.getMessageType() == MessageType.USER_CONNECTED) {
-//            chatWindow.append(msg.getUserName() + ": " + msg.getMessageType().getInfo());
-//        } else {
-//            chatWindow.append(msg.getUserName() + ":" + msg.getMessageVal());
-//        }
-//        chatWindow.append(System.lineSeparator());
     }
 }
