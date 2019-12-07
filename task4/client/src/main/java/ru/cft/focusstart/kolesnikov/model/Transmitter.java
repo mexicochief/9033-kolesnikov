@@ -6,10 +6,8 @@ import ru.cft.focusstart.kolesnikov.Message;
 import ru.cft.focusstart.kolesnikov.MessageType;
 import ru.cft.focusstart.kolesnikov.gui.MainWindow;
 
-
 import java.io.*;
 import java.net.Socket;
-
 
 public class Transmitter {
     private Socket socket;

@@ -65,9 +65,6 @@ public class ClientManager implements Runnable {
                             newMsg.setMessageType(MessageType.USER_NAME_INVALID);
                             send(newMsg);
                             newMsg = mapper.readValue(reader.readLine(), Message.class);
-//                                server.delSocket(this);
-//                                clientSocket.close();
-                            // закрывать поток если не получилось
                         } else {
                             name = newMsg.getUserName(); // дублируется
                             userList.add(newMsg.getUserName());
@@ -96,7 +93,7 @@ public class ClientManager implements Runnable {
                 clientSocket.close();
                 server.delSocket(this);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("IOEx in Client Manager"); // тоже исправить
             }
         }
     }

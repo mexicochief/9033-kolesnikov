@@ -3,7 +3,6 @@ package ru.cft.focusstart.kolesnikov.gui;
 import ru.cft.focusstart.kolesnikov.Message;
 
 import javax.swing.*;
-import java.util.ArrayList;
 
 public class UserListField implements NeedToRefresh {
     private JTextArea userListWindow;

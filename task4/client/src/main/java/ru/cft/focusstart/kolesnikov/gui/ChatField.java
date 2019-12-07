@@ -1,7 +1,6 @@
 package ru.cft.focusstart.kolesnikov.gui;
 
 import ru.cft.focusstart.kolesnikov.Message;
-import ru.cft.focusstart.kolesnikov.MessageType;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;

@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 public class Server {
-    private ClientManager clientManager;
-    private ArrayList<String> userList = new ArrayList<>(); // тут поправить мб убрать static
+    private ArrayList<String> userList = new ArrayList<>();
     private ArrayList<ClientManager> clients = new ArrayList<>();
     private ArrayList<Thread> threads = new ArrayList<>();
     private ServerSocket serverSocket;
@@ -33,7 +32,7 @@ public class Server {
             serverRunning = true;
             while (serverRunning) {
                 Socket socket = serverSocket.accept();
-                clientManager = new ClientManager(socket, this,userList);
+                ClientManager clientManager = new ClientManager(socket, this,userList);
             }
         } catch (IOException e) {
             System.out.println("IOEx in Server"); // исправить
@@ -63,10 +62,7 @@ public class Server {
         clients.add(clientManager);
     }
 
-
     public void delSocket(ClientManager client) {
         clients.remove(client);
     }
-
-
 }

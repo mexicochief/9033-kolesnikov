@@ -1,7 +1,5 @@
 package ru.cft.focusstart.kolesnikov;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -20,7 +18,6 @@ public class Message {
         date = new Date();
         this.messageType = messageType;
     }
-
 
     public MessageType getMessageType() {
         return messageType;
@@ -48,10 +45,6 @@ public class Message {
 
     public Date getDate() {
         return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public ArrayList<String> getUserList() {
