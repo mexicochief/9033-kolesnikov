@@ -1,11 +1,11 @@
-package ru.cft.focusstart.kolesnikov.gui;
+package ru.cft.focusstart.kolesnikov.gui.window.startwindow;
 
 import ru.cft.focusstart.kolesnikov.model.Transmitter;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GreetingFrame {
+public class GreetingWindow implements StartWindow {
     private JFrame greetingFrame;
     private JTextField serverNameTextField;
     private JTextField nameTextField;
@@ -15,11 +15,12 @@ public class GreetingFrame {
     private String serverName;
     private int port;
 
-    public GreetingFrame(Transmitter transmitter){
+    public GreetingWindow(Transmitter transmitter) {
         this.transmitter = transmitter;
     }
 
-    public void runGreetingWindow() {
+    @Override
+    public void runWindow() {
         makeGreetingWindow();
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
@@ -47,6 +48,7 @@ public class GreetingFrame {
 
     private void makeGreetingWindow() {
         greetingFrame = new JFrame();
+        greetingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         serverNameTextField = new JTextField();
         nameTextField = new JTextField();
         serverNameTextField.setBorder(BorderFactory.createTitledBorder("Server"));
@@ -64,10 +66,10 @@ public class GreetingFrame {
         return button;
     }
 
-    private void setCorrectServerInfo(){
+    private void setCorrectServerInfo() {
         userName = nameTextField.getText();
         serverAddress = serverNameTextField.getText();
-        serverAddress = serverAddress.replaceAll(" ","");// не уверен, может лучше выдать ошибку если есть пробелы
+        serverAddress = serverAddress.replaceAll(" ", "");
         int separatorIndex = serverAddress.indexOf(":");
         String strPort;
         if (separatorIndex != -1) {
@@ -75,8 +77,8 @@ public class GreetingFrame {
             strPort = serverAddress.substring(separatorIndex + 1);
             try {
                 port = Integer.parseInt(strPort);
-            }
-            catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
+                makeConnectionProblemWindow();
                 throw new NumberFormatException("Illegal server parameters");
             }
         }
@@ -90,7 +92,16 @@ public class GreetingFrame {
         connectionProblemFrame.pack();
     }
 
-    public void disposeGreetingFrame(){
+    @Override
+    public void makeUserInvalidWindow() {
+        JFrame connectionProblemFrame = new JFrame();
+        JLabel connectionProblemMsg = new JLabel("User invalid");
+        connectionProblemFrame.add(connectionProblemMsg);
+        connectionProblemFrame.setVisible(true);
+        connectionProblemFrame.pack();
+    }
+
+    public void dispose() {
         greetingFrame.dispose();
     }
 }

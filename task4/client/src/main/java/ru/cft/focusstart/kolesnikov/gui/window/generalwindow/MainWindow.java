@@ -1,17 +1,21 @@
-package ru.cft.focusstart.kolesnikov.gui;
+package ru.cft.focusstart.kolesnikov.gui.window.generalwindow;
 
 
+import ru.cft.focusstart.kolesnikov.gui.widgets.ChatField;
+import ru.cft.focusstart.kolesnikov.gui.widgets.UserListField;
+import ru.cft.focusstart.kolesnikov.gui.window.startwindow.GreetingWindow;
+import ru.cft.focusstart.kolesnikov.gui.window.startwindow.StartWindow;
 import ru.cft.focusstart.kolesnikov.model.Transmitter;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class MainWindow {
+public class MainWindow implements GeneralWindow {
     private JFrame mainFrame;
-    public UserListField userListField;
-    private ChatField chatField;
+    private UserListField userListField = new UserListField();
+    private ChatField chatField = new ChatField();
     private Transmitter transmitter;
-    private GreetingFrame greetingFrame;
+    private StartWindow startWindow;
 
     public MainWindow(Transmitter transmitter) {
         mainFrame = new JFrame();
@@ -25,20 +29,18 @@ public class MainWindow {
         mainFrame.setJMenuBar(jMenuBar);
         mainFrame.setBounds(500, 500, 500, 500);
         this.transmitter = transmitter;
-        this.greetingFrame = new GreetingFrame(transmitter);
+        this.startWindow = new GreetingWindow(transmitter);
     }
 
     public void runApp() {
-        greetingFrame.runGreetingWindow();
+        startWindow.runWindow();
     }
 
-    public void runMainWindow() {
-        greetingFrame.disposeGreetingFrame();
-
+    @Override
+    public void runWindow() {
         JPanel mainPanel = makeJPanel();
         GridBagConstraints constraints = new GridBagConstraints();
 
-        chatField = new ChatField();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.gridx = 0;
@@ -48,7 +50,6 @@ public class MainWindow {
         constraints.weighty = 5.0;
         mainPanel.add(chatField.getChatPanel(), constraints);
 
-        userListField = new UserListField();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.gridx = 5;
@@ -76,7 +77,6 @@ public class MainWindow {
         constraints.weightx = 0;
         sendButton.addActionListener(e -> {
             String message = inputTextFieldWindow.getText();
-//            chatField.append(message + System.lineSeparator());
             inputTextFieldWindow.setText("");
             transmitter.sendMsgToServer(message);
         });
@@ -95,19 +95,16 @@ public class MainWindow {
         return mainPanel;
     }
 
-    public void makeUserInvalidWindow() {
-        JFrame connectionProblemFrame = new JFrame();
-        JLabel connectionProblemMsg = new JLabel("User invalid");
-        connectionProblemFrame.add(connectionProblemMsg);
-        connectionProblemFrame.setVisible(true);
-        connectionProblemFrame.pack();
-    }
-
     public UserListField getUserListField() {
         return userListField;
     }
 
     public ChatField getChatField() {
         return chatField;
+    }
+
+    @Override
+    public StartWindow getStartWindow() {
+        return startWindow;
     }
 }

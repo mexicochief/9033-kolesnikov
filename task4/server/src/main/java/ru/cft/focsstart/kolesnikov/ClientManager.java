@@ -2,31 +2,30 @@ package ru.cft.focsstart.kolesnikov;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.log4j.Logger;
 import ru.cft.focusstart.kolesnikov.Message;
 import ru.cft.focusstart.kolesnikov.MessageType;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
 
 public class ClientManager implements Runnable {
-    Socket clientSocket;
+    private Socket clientSocket;
     private BufferedReader reader;
     private BufferedWriter writer;
     private ObjectMapper mapper = new ObjectMapper();
     private Server server;
-    private String name; // перемеиновать
+    private String userName;
     private Thread thread;
-    private ArrayList<String> userList;
+    private Logger log = Logger.getLogger("ClientManager: ");
 
-    ClientManager(Socket clientSocket, Server server, ArrayList<String> userList) {
+    ClientManager(Socket clientSocket, Server server) {
         mapper.registerModule(new JavaTimeModule());
         this.server = server;
         this.clientSocket = clientSocket;
         thread = new Thread(this);
         thread.start();
-        this.userList = userList;
     }
 
     @Override
@@ -34,58 +33,37 @@ public class ClientManager implements Runnable {
         try {
             reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            String newUser = reader.readLine();
-            Message newMsg = mapper.readValue(newUser, Message.class);
             while (!thread.isInterrupted()) {
+                Message newMsg = mapper.readValue(reader.readLine(), Message.class);
                 switch (newMsg.getMessageType()) {
-                    case USER_NAME_VALID:
-                        server.addClient(this); // добавляем в активные
-                        Message message = new Message(MessageType.USER_CONNECTED);
-                        message.setUserList(userList);
-                        message.setUserName(name);
-                        message.setMessageVal(MessageType.USER_CONNECTED.getInfo());
-                        server.sendNewUserInfoToAll(message);
-                        newMsg = mapper.readValue(reader.readLine(), Message.class);
-                        break;
                     case MESSAGE:
-                        newMsg.setUserName(name);
-                        server.sendMsgToAll(newMsg);
-                        newMsg = mapper.readValue(reader.readLine(), Message.class);
+                        newMsg.setUserName(userName);
+                        server.sendMsgToAll(makeMsgFromUser(newMsg.getMessageVal()));
                         break;
                     case DISCONNECTED:
-                        Message userGone = new Message(MessageType.DISCONNECTED);
-                        userGone.setMessageVal(MessageType.DISCONNECTED.getInfo());
-                        userGone.setUserList(userList);
-                        userGone.setUserName(name);
-                        server.sendNewUserInfoToAll(userGone);
+                        server.removeUserFromUserList(userName);
+                        server.sendMsgToAll(makeUserDisconnectedMsg());
                         thread.interrupt();
                         break;
                     case TRYING_CONNECT:
-                        if (userList.contains(newMsg.getUserName())) {
-                            newMsg.setMessageType(MessageType.USER_NAME_INVALID);
-                            send(newMsg);
-                            newMsg = mapper.readValue(reader.readLine(), Message.class);
+                        if (server.getUserList().contains(newMsg.getUserName())) {
+                            send(new Message(MessageType.USER_NAME_INVALID));
                         } else {
-                            name = newMsg.getUserName(); // дублируется
-                            userList.add(newMsg.getUserName());
-                            newMsg = new Message(MessageType.USER_NAME_VALID);
-                            newMsg.setUserName(name); // тоже дублируется
-                            send(newMsg);
-                            newMsg.setUserList(userList);
+                            userName = newMsg.getUserName();
+                            server.addUserToUserList(newMsg.getUserName());
+                            send(makeUserValidMsg());
+                            server.addClient(this);
+                            server.sendMsgToAll(makeUserConnectedMsg());
                         }
                         break;
                 }
             }
         } catch (SocketException e) {
-            userList.remove(name);
-            server.delSocket(this);
-            Message message = new Message(MessageType.DISCONNECTED);
-            message.setMessageVal(MessageType.DISCONNECTED.getInfo());
-            message.setUserList(userList);
-            message.setUserName(name);
-            server.sendNewUserInfoToAll(message);
+            log.error("SocketEx in ClientManager");
+            destroyCurrentClient();
         } catch (IOException e) {
-            e.printStackTrace(); // исправить
+            log.error(e.getMessage());
+           destroyCurrentClient();
         } finally {
             try {
                 writer.close();
@@ -93,39 +71,58 @@ public class ClientManager implements Runnable {
                 clientSocket.close();
                 server.delSocket(this);
             } catch (IOException e) {
-                System.out.println("IOEx in Client Manager"); // тоже исправить
+                log.error("IOException in ClientManager when try close"); // записать в лог
             }
         }
     }
 
-    private void send(Message msg) throws IOException {
+    public void send(Message msg) throws IOException {
         writer.write(mapper.writeValueAsString(msg));
         writer.write(System.lineSeparator());
         writer.flush();
     }
-
-    public void notifyUserConnected(Message msg) {
-        try {
-//            Message message = new Message(MessageType.USER_CONNECTED);
-//            message.setUserList(Server.userList);
-//            message.setUserName(name);
-            writer.write(mapper.writeValueAsString(msg));
-            writer.write(System.lineSeparator());
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    
+    public String getUserName(){
+        return userName;
     }
 
-    public void sendMessage(Message msg) {
-//        Message message = new Message(MessageType.MESSAGE);
-//        message.setUserName(name);
-//        message.setMessageVal(msg.getMessageVal());
-        try {
-            send(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private Message makeUserValidMsg() {
+        Message message = new Message(MessageType.USER_NAME_VALID);
+        message.setUserName(userName);
+        return message;
     }
 
+    private Message makeUserConnectedMsg() {
+        Message message = new Message(MessageType.USER_CONNECTED);
+        message.setUserList(server.getUserList());
+        message.setUserName(userName);
+        message.setMessageVal(MessageType.USER_CONNECTED.getInfo());
+        return message;
+    }
+
+    private Message makeMsgFromUser(String msgVal) {
+        Message message = new Message(MessageType.MESSAGE);
+        message.setUserName(userName);
+        message.setMessageVal(msgVal);
+        return message;
+    }
+
+    private Message makeUserDisconnectedMsg(){
+        Message message = new Message(MessageType.DISCONNECTED);
+        message.setMessageVal(MessageType.DISCONNECTED.getInfo());
+        message.setUserList(server.getUserList());
+        message.setUserName(userName);
+        return message;
+    }
+
+    private void destroyCurrentClient(){
+        server.getUserList().remove(userName);
+        server.delSocket(this);
+        Message message = makeUserDisconnectedMsg();
+        try { // тут как-то поправить
+            server.sendMsgToAll(message);
+        } catch (IOException ex) {
+            log.error("IOException in ClientManager in method destroyCurrentClient()");
+        }
+    }
 }

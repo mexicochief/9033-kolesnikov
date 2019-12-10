@@ -1,8 +1,8 @@
-package ru.cft.focusstart.kolesnikov.gui;
+package ru.cft.focusstart.kolesnikov.gui.widgets;
 
 import ru.cft.focusstart.kolesnikov.Message;
 
-public interface NeedToRefresh {
+public interface Observer {
 
     void refresh(Message msg);
 }

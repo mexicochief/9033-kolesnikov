@@ -1,10 +1,10 @@
-package ru.cft.focusstart.kolesnikov.gui;
+package ru.cft.focusstart.kolesnikov.gui.widgets;
 
 import ru.cft.focusstart.kolesnikov.Message;
 
 import javax.swing.*;
 
-public class UserListField implements NeedToRefresh {
+public class UserListField implements Observer {
     private JTextArea userListWindow;
     private JScrollPane userListPanel;
 

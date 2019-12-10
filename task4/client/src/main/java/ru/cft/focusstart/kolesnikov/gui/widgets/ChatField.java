@@ -1,11 +1,11 @@
-package ru.cft.focusstart.kolesnikov.gui;
+package ru.cft.focusstart.kolesnikov.gui.widgets;
 
 import ru.cft.focusstart.kolesnikov.Message;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;
 
-public class ChatField implements NeedToRefresh {
+public class ChatField implements Observer {
     private JScrollPane chatPanel;
     private JTextArea chatWindow;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");

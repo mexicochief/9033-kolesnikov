@@ -1,5 +1,6 @@
 package ru.cft.focsstart.kolesnikov;
 
+import org.apache.log4j.Logger;
 import ru.cft.focusstart.kolesnikov.Message;
 
 import java.io.*;
@@ -14,14 +15,10 @@ public class Server {
     private ArrayList<Thread> threads = new ArrayList<>();
     private ServerSocket serverSocket;
     private boolean serverRunning;
+    private Logger log = Logger.getLogger("Server: ");
 
     public Server()  {
-        Runtime.getRuntime().addShutdownHook(new Thread(() ->{
-            for (Thread thread:threads){
-                thread.interrupt();
-            }
-            serverRunning = false;
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->serverRunning = false));
     }
 
     public void runServer() {
@@ -32,29 +29,23 @@ public class Server {
             serverRunning = true;
             while (serverRunning) {
                 Socket socket = serverSocket.accept();
-                ClientManager clientManager = new ClientManager(socket, this,userList);
+                ClientManager clientManager = new ClientManager(socket, this);
             }
         } catch (IOException e) {
-            System.out.println("IOEx in Server"); // исправить
+            log.error("IOException in server");
         }
         finally {
             try {
                 serverSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+               log.error("IOException in server when try close server socket");
             }
         }
     }
 
-    public void sendNewUserInfoToAll(Message msg) {
+    public void sendMsgToAll(Message msg) throws IOException {
         for (ClientManager client : clients) {
-            client.notifyUserConnected(msg);
-        }
-    }
-
-    public void sendMsgToAll(Message msg) {
-        for (ClientManager client : clients) {
-            client.sendMessage(msg);
+            client.send(msg);
         }
     }
 
@@ -63,6 +54,19 @@ public class Server {
     }
 
     public void delSocket(ClientManager client) {
+        removeUserFromUserList(client.getUserName());
         clients.remove(client);
+    }
+
+    public ArrayList<String> getUserList() {
+        return userList;
+    }
+
+    public void addUserToUserList(String name){
+        userList.add(name);
+    }
+
+    public void removeUserFromUserList(String name){
+        userList.remove(name);
     }
 }
