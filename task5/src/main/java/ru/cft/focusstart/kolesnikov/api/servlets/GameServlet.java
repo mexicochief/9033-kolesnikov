@@ -44,7 +44,7 @@ public class GameServlet extends HttpServlet {
                 writeResp(resp, getByReleaseDate(url));
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
 
     }
@@ -60,7 +60,7 @@ public class GameServlet extends HttpServlet {
                 writeResp(resp, responseMsg);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 
@@ -73,7 +73,7 @@ public class GameServlet extends HttpServlet {
                 writeResp(resp, respMsg);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 
@@ -87,7 +87,7 @@ public class GameServlet extends HttpServlet {
                 gameService.delete(id);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 

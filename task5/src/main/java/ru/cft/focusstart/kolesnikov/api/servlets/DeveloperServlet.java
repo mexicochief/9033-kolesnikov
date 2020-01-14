@@ -38,7 +38,7 @@ public class DeveloperServlet extends HttpServlet {
                 writeResp(resp, getGames(url));
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
 
     }
@@ -53,7 +53,7 @@ public class DeveloperServlet extends HttpServlet {
                 writeResp(resp, responseMsg);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 
@@ -66,7 +66,7 @@ public class DeveloperServlet extends HttpServlet {
                 writeResp(resp, respMsg);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 

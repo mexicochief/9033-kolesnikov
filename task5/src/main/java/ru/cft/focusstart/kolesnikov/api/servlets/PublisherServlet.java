@@ -38,7 +38,7 @@ public class PublisherServlet extends HttpServlet {
                 writeResp(resp, getGames(url));
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
 
     }
@@ -54,7 +54,7 @@ public class PublisherServlet extends HttpServlet {
                 writeResp(resp, publisherService.add(requestMsg));
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 
@@ -67,7 +67,7 @@ public class PublisherServlet extends HttpServlet {
                 writeResp(resp, respMsg);
             }
         } catch (Exception e) {
-            exceptionHandler.exceptionHandler(e, resp);
+            exceptionHandler.handleExceptions(e, resp);
         }
     }
 

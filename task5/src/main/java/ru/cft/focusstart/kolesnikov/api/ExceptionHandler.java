@@ -19,7 +19,7 @@ public class ExceptionHandler {
         return INSTANCE;
     }
 
-    public void exceptionHandler(Exception e, HttpServletResponse resp) throws IOException {
+    public void handleExceptions(Exception e, HttpServletResponse resp) throws IOException {
         ErrorMessage eMsg;
         if (e instanceof IllegalArgumentException) {
             eMsg = new ErrorMessage(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
