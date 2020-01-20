@@ -1,20 +1,29 @@
 package ru.cft.focusstart.kolesnikov.service.game;
 
-import ru.cft.focusstart.kolesnikov.repository.game.GameDBManager;
-import ru.cft.focusstart.kolesnikov.repository.game.JdbcGameManager;
 import ru.cft.focusstart.kolesnikov.dto.game.GameMessage;
 import ru.cft.focusstart.kolesnikov.exception.ObjectNotFoundException;
+import ru.cft.focusstart.kolesnikov.repository.developer.DeveloperDBManager;
+import ru.cft.focusstart.kolesnikov.repository.developer.JdbcDeveloperManager;
+import ru.cft.focusstart.kolesnikov.repository.game.GameDBManager;
+import ru.cft.focusstart.kolesnikov.repository.game.JdbcGameManager;
+import ru.cft.focusstart.kolesnikov.repository.publisher.JdbcPublisherManager;
+import ru.cft.focusstart.kolesnikov.repository.publisher.PublisherDBManager;
 import ru.cft.focusstart.kolesnikov.service.validation.Validator;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultGameService implements GameService {
     private static final DefaultGameService INSTANCE = new DefaultGameService();
     private GameDBManager gameManager;
+    private PublisherDBManager publisherManager;
+    private DeveloperDBManager developerManager;
 
     DefaultGameService() {
         this.gameManager = JdbcGameManager.getInstance();
+        this.publisherManager = JdbcPublisherManager.getInstance();
+        this.developerManager = JdbcDeveloperManager.getInstance();
     }
 
     public static DefaultGameService getInstance() {
@@ -25,10 +34,7 @@ public class DefaultGameService implements GameService {
     public List<GameMessage> get(String name, String developerName) {
         List<GameMessage> respMsg = gameManager.get(name, developerName);
         if (respMsg == null) {
-            throw new ObjectNotFoundException(String.format(
-                    "game with name - %s or with developer name - %s not found",
-                    name,
-                    developerName));
+            return new ArrayList<>();
         }
         return respMsg;
     }
@@ -36,6 +42,12 @@ public class DefaultGameService implements GameService {
     @Override
     public GameMessage add(GameMessage reqMsg) {
         validate(reqMsg);
+        if (publisherManager.getById(reqMsg.getPublisherId()) == null) {
+            throw new ObjectNotFoundException(String.format("Publisher with id - %s not found", reqMsg.getPublisherId()));
+        }
+        if (developerManager.getById(reqMsg.getDeveloperId()) == null) {
+            throw new ObjectNotFoundException(String.format("Publisher with id - %s not found", reqMsg.getDeveloperId()));
+        }
         return gameManager.add(reqMsg);
     }
 

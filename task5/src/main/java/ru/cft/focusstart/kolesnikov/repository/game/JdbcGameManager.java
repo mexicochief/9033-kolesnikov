@@ -8,6 +8,7 @@ import ru.cft.focusstart.kolesnikov.dto.game.GameMessage;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class JdbcGameManager implements GameDBManager {
     private static final JdbcGameManager INSTANCE = new JdbcGameManager();
     private final static Logger log = LoggerFactory.getLogger(JdbcGameManager.class);
 
-    private static final String ADD = "INSERT INTO games(name, description, release_date, developerid, publisherid)" +
+    private static final String ADD = "INSERT INTO game(name, description, release_date, developerid, publisherid)" +
             "values(?,?,?,?,?)";
     private static final String GET_BY_NAME = "SELECT a.id," +
             "a.developerid," +
@@ -25,26 +26,26 @@ public class JdbcGameManager implements GameDBManager {
             "a.release_date," +
             "a.description," +
             "b.name " +
-            "FROM games a " +
-            "LEFT JOIN developers b on a.developerid = b.id " +
+            "FROM game a " +
+            "INNER JOIN developer b on a.developerid = b.id " +
             "WHERE lower(a.name) LIKE lower('%'|| ? || '%') " +
             "and   lower(b.name) LIKE lower('%'|| ? || '%') ";
-    private static final String GET_BY_ID = "SELECT * FROM games " +
+    private static final String GET_BY_ID = "SELECT * FROM game " +
             "WHERE id = ?";
     private static final String GET_BY_PUBLISHER_ID = "SELECT * FROM games " +
             "WHERE publisherid = ?";
     private static final String GET_BY_DEVELOPER_ID = "SELECT * FROM games " +
             "WHERE developerid = ?";
-    private static final String GET_BY_DATE = "SELECT * FROM games " +
+    private static final String GET_BY_DATE = "SELECT * FROM game " +
             "WHERE  release_date = ? ";
-    private static final String UPDATE = "UPDATE games " +
+    private static final String UPDATE = "UPDATE game " +
             "SET name = ?, " +
             "description = ?," +
             "release_date = ?," +
             "developerid = ?," +
             "publisherid = ? " +
             "WHERE id = ?";
-    private static final String DELETE = "DELETE FROM games " +
+    private static final String DELETE = "DELETE FROM game " +
             "WHERE id = ?";
 
     private JdbcGameManager() {
@@ -57,16 +58,17 @@ public class JdbcGameManager implements GameDBManager {
 
     @Override
     public GameMessage add(GameMessage reqMsg) {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pStatement = connection.prepareStatement(ADD, Statement.RETURN_GENERATED_KEYS)) {
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement pStatement = connection.prepareStatement(ADD, Statement.RETURN_GENERATED_KEYS)) {
             String name = reqMsg.getName();
             String description = reqMsg.getDescription();
-            Date releaseDate = reqMsg.getReleaseDate();
+            LocalDate releaseDate = reqMsg.getReleaseDate();
             long developerId = reqMsg.getDeveloperId();
             long publisherId = reqMsg.getPublisherId();
             pStatement.setString(1, name);
             pStatement.setString(2, description);
-            pStatement.setDate(3, releaseDate);
+            pStatement.setObject(3, releaseDate);
             pStatement.setLong(4, developerId);
             pStatement.setLong(5, publisherId);
             pStatement.executeUpdate();
@@ -161,7 +163,7 @@ public class JdbcGameManager implements GameDBManager {
                 PreparedStatement pStatement = connection.prepareStatement(UPDATE)) {
             pStatement.setString(1, reqMsg.getName());
             pStatement.setString(2, reqMsg.getDescription());
-            pStatement.setDate(3, reqMsg.getReleaseDate());
+            pStatement.setObject(3, reqMsg.getReleaseDate()); // тут
             pStatement.setLong(4, reqMsg.getDeveloperId());
             pStatement.setLong(5, reqMsg.getPublisherId());
             pStatement.setLong(6, id);
@@ -205,7 +207,7 @@ public class JdbcGameManager implements GameDBManager {
         long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         String description = resultSet.getString("description");
-        Date releaseDate = resultSet.getDate("release_date");
+        LocalDate releaseDate = resultSet.getObject("release_date", LocalDate.class);
         long developerId = resultSet.getLong("developerId");
         long publisherId = resultSet.getLong("publisherId");
         return new GameMessage(name, id, description, releaseDate, developerId, publisherId);

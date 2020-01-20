@@ -16,13 +16,13 @@ public class JdbcPublisherManager implements PublisherDBManager {
     private static JdbcPublisherManager INSTANCE = new JdbcPublisherManager();
     private final static Logger log = LoggerFactory.getLogger(JdbcPublisherManager.class);
 
-    private static final String ADD = "INSERT INTO publishers(name) " +
+    private static final String ADD = "INSERT INTO publisher(name) " +
             "values (?)";
-    private static final String GET = "SELECT * FROM publishers" +
+    private static final String GET = "SELECT * FROM publisher" +
             " WHERE lower(name) LIKE lower('%'|| ? ||'%')";
-    private static final String GET_BY_ID = "SELECT * from publishers " +
+    private static final String GET_BY_ID = "SELECT * from publisher " +
             "WHERE id = ? ";
-    private static final String UPDATE = "UPDATE publishers " +
+    private static final String UPDATE = "UPDATE publisher " +
             "SET name = ? " +
             "where id = ? ";
 

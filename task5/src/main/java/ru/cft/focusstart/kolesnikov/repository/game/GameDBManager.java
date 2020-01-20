@@ -9,9 +9,9 @@ public interface GameDBManager {
 
     GameMessage add(GameMessage reqMsg);
 
-    GameMessage getById(long id); // мб заменить на optional
+    GameMessage getById(long id);
 
-    List<GameMessage> get(String name, String developerName); // надо чтоб get получал строку по которой искать в базе
+    List<GameMessage> get(String name, String developerName);
 
     List<GameMessage> getByReleaseDate(Date releaseDate);
 

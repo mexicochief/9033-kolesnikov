@@ -9,6 +9,7 @@ import ru.cft.focusstart.kolesnikov.dto.publisher.PublisherMessage;
 import ru.cft.focusstart.kolesnikov.exception.ObjectNotFoundException;
 import ru.cft.focusstart.kolesnikov.service.validation.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultPublisherService implements PublisherService {
@@ -35,7 +36,7 @@ public class DefaultPublisherService implements PublisherService {
     public List<PublisherMessage> get(String name) {
         List<PublisherMessage> respMsg = publisherManager.get(name);
         if (respMsg == null) {
-            throw new ObjectNotFoundException(String.format("Publisher with name - %s not found", name));
+            return new ArrayList<>();
         }
         return respMsg;
     }
@@ -67,7 +68,7 @@ public class DefaultPublisherService implements PublisherService {
         }
         List<GameMessage> respMsg = gameManager.getByPublisherId(id);
         if (respMsg == null) {
-            throw new ObjectNotFoundException(String.format("Publisher with id - %s have not games", id));
+            return new ArrayList<>();
         }
         return respMsg;
     }

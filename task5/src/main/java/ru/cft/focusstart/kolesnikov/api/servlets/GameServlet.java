@@ -34,7 +34,7 @@ public class GameServlet extends HttpServlet {
         try {
 
             String url = getUrl(req);
-            if (url.equals(GAMES_PATTERN)) { // наверное лучше сделать единорбразно
+            if (url.matches(GAMES_PATTERN)) {
                 List<GameMessage> respMessages = getByName(req);
                 writeResp(resp, respMessages);
             } else if (url.matches(GAME_PATTERN)) {

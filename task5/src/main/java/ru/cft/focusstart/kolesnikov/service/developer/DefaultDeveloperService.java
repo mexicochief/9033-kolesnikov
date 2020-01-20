@@ -9,12 +9,13 @@ import ru.cft.focusstart.kolesnikov.dto.game.GameMessage;
 import ru.cft.focusstart.kolesnikov.exception.ObjectNotFoundException;
 import ru.cft.focusstart.kolesnikov.service.validation.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultDeveloperService implements DeveloperService {
     private static final DefaultDeveloperService INSTANCE = new DefaultDeveloperService();
-    DeveloperDBManager developerManager;
-    GameDBManager gameManager;
+    private DeveloperDBManager developerManager;
+    private GameDBManager gameManager;
 
     private DefaultDeveloperService() {
         this.developerManager = JdbcDeveloperManager.getInstance();
@@ -29,7 +30,8 @@ public class DefaultDeveloperService implements DeveloperService {
     public List<DeveloperMessage> get(String name) {
         List<DeveloperMessage> respMsg = developerManager.get(name);
         if (respMsg == null) {
-            throw new ObjectNotFoundException(String.format("Developer with name - %s not found", name));
+            return new ArrayList<>();
+
         }
         return developerManager.get(name);
     }
@@ -56,7 +58,7 @@ public class DefaultDeveloperService implements DeveloperService {
         }
         List<GameMessage> respMsg = gameManager.getByDeveloperId(id);
         if (respMsg == null) {
-            throw new ObjectNotFoundException(String.format("Developer with id %s have not games", id));
+            return new ArrayList<>();
         }
         return respMsg;
     }

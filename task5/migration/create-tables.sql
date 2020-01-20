@@ -1,4 +1,4 @@
-create schema gamedatabase;
+-- create schema Games;
 
 create table developer
 (
@@ -24,8 +24,14 @@ create table game
     name         varchar(256)  not null,
     description  varchar(4096) not null,
     release_date date          not null,
-    developerId  bigserial     not null,
-    publisherId  bigserial     not null
+    developerId  bigint        not null,
+    publisherId  bigint        not null
 );
 alter table game
     add constraint game_pk primary key (id);
+
+alter table game
+    add constraint game_developer_id_fk foreign key (developerId) references developer (id);
+
+alter table game
+    add constraint game_publisher_id_fk foreign key (publisherId) references publisher (id);

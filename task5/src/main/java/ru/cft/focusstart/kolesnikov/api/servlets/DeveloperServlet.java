@@ -28,7 +28,7 @@ public class DeveloperServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String url = getUrl(req);
-            if (url.equals(DEVELOPERS_PATTERN)) { // наверное лучше сделать единорбразно
+            if (url.matches(DEVELOPERS_PATTERN)) {
                 List<DeveloperMessage> respMessages = getByName(req.getParameter("name"));
                 writeResp(resp, respMessages);
             } else if (url.matches(DEVELOPER_PATTERN)) {

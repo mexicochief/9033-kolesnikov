@@ -28,7 +28,7 @@ public class PublisherServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             String url = getUrl(req);
-            if (url.equals(PUBLISHERS_PATTERN)) { // наверное лучше сделать единорбразно
+            if (url.matches(PUBLISHERS_PATTERN)) {
                 List<PublisherMessage> respMessages = getByName(req.getParameter("name"));
                 writeResp(resp, respMessages);
             } else if (url.matches(PUBLISHER_PATTERN)) {
